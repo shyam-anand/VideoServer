@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * Defines methods to store, retrieve and delete files on the local file system
+ *
  * @author Shyam Anand (shyamwdr@gmail.com)
  *         03/09/17
  */
@@ -55,6 +57,9 @@ public class FileSystemStorage implements FileStorage {
         this.messageDigest = messageDigest;
     }
 
+    /**
+     * Creates the uploads directory.
+     */
     @PostConstruct
     @Override
     public void init() {
@@ -72,6 +77,13 @@ public class FileSystemStorage implements FileStorage {
         }
     }
 
+    /**
+     * Stores a file-part under a directory named checksum
+     *
+     * @param part     Part of the file
+     * @param checksum Checksum for the original file. A subdirectory is created with this as the name.
+     * @throws FileStorageFailedException
+     */
     @Override
     public void storePart(final MultipartFile part, final String checksum) throws FileStorageFailedException {
         final String partName = StringUtils.cleanPath(part.getOriginalFilename());
@@ -99,6 +111,11 @@ public class FileSystemStorage implements FileStorage {
         logger.info("Saved file {}", part.getOriginalFilename());
     }
 
+    /**
+     * Lists all files under the uploads directory, filtering directories and part files.
+     *
+     * @return Stream of Path objects for the files.
+     */
     @Override
     public Stream<Path> loadAll() {
         try {
@@ -109,6 +126,14 @@ public class FileSystemStorage implements FileStorage {
         }
     }
 
+    /**
+     * Returns the Path to the original file, combining the parts under checksum directory
+     *
+     * @param checksum Checksum for the original file
+     * @return Path to the combined file.
+     * @throws FileOpenFailedException
+     * @throws FileNotFoundException
+     */
     @Override
     public Path getOriginalFile(final String checksum) throws FileOpenFailedException, FileNotFoundException {
         Path dir = Paths.get(rootDir.toString(), checksum);
@@ -140,6 +165,13 @@ public class FileSystemStorage implements FileStorage {
         } else throw new IllegalStateException("No directory named " + checksum);
     }
 
+    /**
+     * Joins the file parts under the subdirectory
+     *
+     * @param checksum Checksum for the original file, which is also the subdirectory name.
+     * @return Resulting File
+     * @throws FileOpenFailedException
+     */
     private File joinParts(final Path checksum) throws FileOpenFailedException {
         logger.debug("Joining parts in checksum {}", checksum.toString());
         sortedPartsSet.clear();
@@ -178,12 +210,20 @@ public class FileSystemStorage implements FileStorage {
             }
             outputStream.close();
         } catch (IOException e) {
-            logger.error(e.getMessage() + " while trying to open " + outputFile +" for writing");
+            logger.error(e.getMessage() + " while trying to open " + outputFile + " for writing");
         }
         logger.debug("Output file size: {}b", outputFile.length());
         return outputFile;
     }
 
+    /**
+     * Verifies the checksum for the generated file against the checksum sent by the frontend.
+     *
+     * @param checksum Checksum sent by front-end
+     * @param file     File for which the verification should be done.
+     * @return TRUE on success.
+     * @throws IOException
+     */
     private boolean verifyChecksum(String checksum, File file) throws IOException {
         messageDigest.update(Files.readAllBytes(file.toPath()));
         byte[] digest = messageDigest.digest();
@@ -192,6 +232,14 @@ public class FileSystemStorage implements FileStorage {
         return fileChecksum.equalsIgnoreCase(checksum);
     }
 
+    /**
+     * Returns the file for playback as a Resource object
+     *
+     * @param filename Video file name
+     * @return Resource object to the file
+     * @throws FileOpenFailedException
+     * @throws FileNotFoundException
+     */
     @Override
     public Resource load(String filename) throws FileOpenFailedException, FileNotFoundException {
         Path filePath = Paths.get(rootDir.toString(), filename);
@@ -215,6 +263,9 @@ public class FileSystemStorage implements FileStorage {
         return new ByteArrayResource(content);
     }
 
+    /**
+     * Deletes all files and directories under uploads dir.
+     */
     @Override
     public void deleteAll() {
         try {
