@@ -12,6 +12,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -33,6 +35,13 @@ public class FilesController {
 
     @Autowired
     private FileStorage fileStorage;
+
+    @RequestMapping(value = "/parts", method = RequestMethod.OPTIONS)
+    public ResponseEntity options() {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add("Allow", "POST, OPTIONS");
+        return new ResponseEntity(headers, HttpStatus.OK);
+    }
 
     /**
      * Receives a file part.
