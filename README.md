@@ -8,8 +8,9 @@ You will need maven to run the project.
 
 1. Download the sources
 2. Run `mvn spring-boot:run` to directly run from command line
-3. You can deploy this to existing Tomcat server as well. 
-Run `mvn install` to build the war file. And then use the war file to deploy to Tomcat.
+3. Or, to deploy to an existing Tomcat server, run `mvn install` and then use the generated war file.
+
+The application listens to `localhost:8080` by default.
 
 ## Configuration
 
