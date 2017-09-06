@@ -21,16 +21,16 @@ Configurations go inside `resources/application.properties`.
 
 All the sources referred to are under `src/main/java/com/shyamanand/fileupload`.
 
-#### web.controllers.FilesController controller
+#### `web.controllers.FilesController controller`
 
 This class defines the REST endpoints to receive requests for uploading the files, and for the video URL. This depends on the `FileStorage` interface 
 to store and retrieve files.
 
-#### storage.FileStorage interface
+#### `storage.FileStorage interface`
 
 This interface declares method to store, retrieve and delete files.
 
-#### storage.filesystem.FileSystemStorage
+#### `storage.filesystem.FileSystemStorage`
 
 This class implements `storage.FileStorage` and defines methods to store and retrieve files on the local filesystem.
 
