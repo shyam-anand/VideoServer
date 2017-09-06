@@ -40,6 +40,7 @@ public class FilesController {
     public ResponseEntity options() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add("Allow", "POST, OPTIONS");
+        headers.add("Access-Control-Allow-Origin", "https://shyam-anand.github.io");
         return new ResponseEntity(headers, HttpStatus.OK);
     }
 
