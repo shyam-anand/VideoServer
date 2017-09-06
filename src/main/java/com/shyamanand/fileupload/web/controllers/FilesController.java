@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *         03/09/17
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @RequestMapping("/files")
 public class FilesController {
     private static final Logger logger = LoggerFactory.getLogger(FilesController.class);
